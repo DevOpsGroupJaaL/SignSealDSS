@@ -4,7 +4,6 @@ io/swagger/configuration/CustomInstantDeserializer$2.class
 io/swagger/configuration/CustomInstantDeserializer$12.class
 io/swagger/configuration/CustomInstantDeserializer$4.class
 io/swagger/configuration/CustomInstantDeserializer$7.class
-io/swagger/sign/Sign.class
 io/swagger/api/ApiOriginFilter.class
 io/swagger/configuration/CustomInstantDeserializer$5.class
 io/swagger/Swagger2SpringBoot$ExitException.class
