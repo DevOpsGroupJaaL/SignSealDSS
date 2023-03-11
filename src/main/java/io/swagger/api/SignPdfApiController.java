@@ -1,6 +1,7 @@
 package io.swagger.api;
 
 import io.swagger.model.Document;
+import io.swagger.sign.Sign;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import eu.europa.esig.dss.model.DSSDocument;
 
 import javax.validation.constraints.*;
 import javax.validation.Valid;
@@ -50,8 +52,17 @@ public class SignPdfApiController implements SignPdfApi {
 
     public ResponseEntity<Void> signDocument(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Document body) {
         String accept = request.getHeader("Accept");
-
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        Sign sign = new Sign();
+        try {
+            String signed = sign.signDoc("/home/aledmin/Dev/JaalSigning/target/Transcript.pdf", "/home/aledmin/Dev/JaalSigning/target/keyStore.p12", "pass");
+            if (signed == "OK") {
+                return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+            } else {
+                return  new ResponseEntity<Void>(HttpStatus.BAD_GATEWAY);
+            }
+        } catch (IOException e) {
+            return new ResponseEntity<Void>(HttpStatus.BAD_GATEWAY);
+        }
     }
 
 }
