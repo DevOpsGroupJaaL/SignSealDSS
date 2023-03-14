@@ -7,25 +7,32 @@ package io.swagger.sign;
  import eu.europa.esig.dss.enumerations.SignatureLevel;
  import eu.europa.esig.dss.enumerations.DigestAlgorithm;
  import eu.europa.esig.dss.pdf.pdfbox.PdfBoxNativeObjectFactory;
+ import eu.europa.esig.dss.utils.Utils;
  import eu.europa.esig.dss.validation.CommonCertificateVerifier;
  import eu.europa.esig.dss.pades.signature.PAdESService;
  import eu.europa.esig.dss.model.ToBeSigned;
  import eu.europa.esig.dss.model.SignatureValue;
  import eu.europa.esig.dss.model.DSSDocument;
- import java.io.File;
  import java.nio.file.Files;
  import java.awt.*;
  import java.io.IOException;
  import java.nio.file.Paths;
  import java.security.KeyStore.PasswordProtection;
- import java.sql.SQLOutput;
 
  import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
  import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 
+ import io.swagger.aws.S3;
+ import software.amazon.awssdk.services.s3.S3Client;
+
+ import static eu.europa.esig.dss.utils.Utils.toByteArray;
+
+
 public class Sign {
+    private final String bucketName = "jaal-dsdss-documents";
+
     private byte[] convertDocToByteArr(String filePath) throws IOException {
-     return Files.readAllBytes(Paths.get(filePath));
+      return Files.readAllBytes(Paths.get(filePath));
     }
 
     private SignatureImageParameters setImageParams() throws IOException {
@@ -61,8 +68,13 @@ public class Sign {
      return imageParameters;
     }
     public String signDoc(String filePath, String certPath, String pass) throws IOException {
+    // connect to s3
+     S3 s3 = new S3();
+     S3Client s3Client = s3.getS3Client();
+
+     byte[] document = s3.getObjectBytes(s3Client, bucketName, filePath);
      // Convert Document from dir the byte array
-     DSSDocument toSignDocument = new InMemoryDocument(convertDocToByteArr(filePath));
+     DSSDocument toSignDocument = new InMemoryDocument(document);
 
      // Get token from certificate
      Pkcs12SignatureToken signingToken = new Pkcs12SignatureToken(certPath, new PasswordProtection(pass.toCharArray()));
@@ -101,7 +113,10 @@ public class Sign {
      // We invoke the xadesService to sign the document with the signature value obtained in
      // the previous step.
      DSSDocument signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
-     signedDocument.save("/home/aledmin/Downloads/signed.pdf");
+
+    //     signedDocument.save("temp.pdf");
+     byte[] output = Utils.toByteArray(signedDocument.openStream());
+     S3.putS3Object(s3Client, bucketName, filePath, output);
      return "OK";
 
     }
