@@ -16,3 +16,7 @@ You can view the api documentation in swagger-ui by pointing to
 http://localhost:8080/aleandromifsud/JavaApp/1.0.0/
 
 Change default port value in application.properties
+
+Commands to self sign a certificate 
+1. openssl req -x509 -newkey rsa:4096 -keyout myKey.pem -out cert.pem -days 365 -nodes
+2. openssl pkcs12 -export -out keyStore.p12 -inkey myKey.pem -in cert.pem

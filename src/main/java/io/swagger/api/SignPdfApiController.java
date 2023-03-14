@@ -54,7 +54,7 @@ public class SignPdfApiController implements SignPdfApi {
         String accept = request.getHeader("Accept");
         Sign sign = new Sign();
         try {
-            String signed = sign.signDoc("/home/aledmin/Dev/JaalSigning/target/Transcript.pdf", "/home/aledmin/Dev/JaalSigning/target/keyStore.p12", "pass");
+            String signed = sign.signDoc(body.getDocumentRef(), "/home/aledmin/Dev/JaalSigning/target/keyStore.p12", "pass");
             if (signed == "OK") {
                 return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
             } else {
