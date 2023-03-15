@@ -23,10 +23,7 @@ package io.swagger.sign;
  import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 
  import io.swagger.aws.S3;
- import io.swagger.certificates.Certs;
  import software.amazon.awssdk.services.s3.S3Client;
-
- import static eu.europa.esig.dss.utils.Utils.toByteArray;
 
 
 public class Sign {
@@ -68,16 +65,13 @@ public class Sign {
 
      return imageParameters;
     }
-    public String signDoc(String filePath, String certPath, String pass) throws IOException {
-     // Test cert creation
-    Certs cert = new Certs();
-    cert.createCertificate("Ale", "testing123", "pass");
-
+    public String signDoc(String filePath, String certPath, String pass) throws Exception {
     // connect to s3
      S3 s3 = new S3();
      S3Client s3Client = s3.getS3Client();
 
-     byte[] document = s3.getObjectBytes(s3Client, bucketName, filePath);
+//     byte[] document = s3.getObjectBytes(s3Client, bucketName, filePath);
+     byte[] document =  convertDocToByteArr(filePath);
      // Convert Document from dir the byte array
      DSSDocument toSignDocument = new InMemoryDocument(document);
 
@@ -119,7 +113,7 @@ public class Sign {
      // the previous step.
      DSSDocument signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
 
-    //     signedDocument.save("temp.pdf");
+     signedDocument.save("temp.pdf");
      byte[] output = Utils.toByteArray(signedDocument.openStream());
      S3.putS3Object(s3Client, bucketName, filePath, output);
      return "OK";

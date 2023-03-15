@@ -1,5 +1,7 @@
 package io.swagger.api;
 
+import io.swagger.certificates.GenCert;
+import io.swagger.certificates.SaveCertificate;
 import io.swagger.model.Document;
 import io.swagger.sign.Sign;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,8 +55,12 @@ public class SignPdfApiController implements SignPdfApi {
     public ResponseEntity<Void> signDocument(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody Document body) {
         String accept = request.getHeader("Accept");
         Sign sign = new Sign();
-        try {
-            String signed = sign.signDoc(body.getDocumentRef(), "/home/aledmin/Dev/JaalSigning/target/keyStore.p12", "pass");
+        try
+        {
+            SaveCertificate sc = new SaveCertificate();
+//            sc.saveCertificate("", "", "");
+            String signed = sign.signDoc(body.getDocumentRef(), "/home/aledmin/Dev/JaalSigning/mycertificate.p12", "mypassword");
+//            String signed = "OK";
             if (signed == "OK") {
                 return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
             } else {
@@ -62,6 +68,8 @@ public class SignPdfApiController implements SignPdfApi {
             }
         } catch (IOException e) {
             return new ResponseEntity<Void>(HttpStatus.BAD_GATEWAY);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
