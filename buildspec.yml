@@ -13,7 +13,9 @@ phases:
       - mvn install
   post_build:
     commands:
-      - echo Build completed!
+      # move the jar (by wildcard, agnostic to its name) to top level app.jar
+      - mv target/swagger-spring-1.0.0.jar application.jar
 artifacts:
   files:
-    - target/swagger-spring-1.0.0.jar
+    # publish the now top level app.jar as the artifact
+    - application.jar
