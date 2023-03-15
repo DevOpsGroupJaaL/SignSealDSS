@@ -57,9 +57,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.github.leeyazhou.chilkat</groupId>
+                <artifactId>chilkat</artifactId>
+                <version>9.5.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
+
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>

@@ -23,6 +23,7 @@ package io.swagger.sign;
  import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 
  import io.swagger.aws.S3;
+ import io.swagger.certificates.Certs;
  import software.amazon.awssdk.services.s3.S3Client;
 
  import static eu.europa.esig.dss.utils.Utils.toByteArray;
@@ -68,6 +69,10 @@ public class Sign {
      return imageParameters;
     }
     public String signDoc(String filePath, String certPath, String pass) throws IOException {
+     // Test cert creation
+    Certs cert = new Certs();
+    cert.createCertificate("Ale", "testing123", "pass");
+
     // connect to s3
      S3 s3 = new S3();
      S3Client s3Client = s3.getS3Client();
