@@ -13,7 +13,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-03-09T19:22:05.457058474Z[GMT]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-03-16T09:26:44.000124225Z[GMT]")
 @Configuration
 public class SwaggerDocumentationConfig {
 
@@ -31,12 +31,12 @@ public class SwaggerDocumentationConfig {
     ApiInfo apiInfo() {
         return new ApiInfoBuilder()
             .title("Digital Signatures API")
-            .description("This API provides the functionality for signing")
+            .description("This API provides the functionality for signing PDF documents and creating PKCS#12 signing certificates")
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
             .termsOfServiceUrl("")
             .version("1.0.0")
-            .contact(new Contact("","", "you@your-company.com"))
+            .contact(new Contact("","", ""))
             .build();
     }
 
@@ -45,14 +45,14 @@ public class SwaggerDocumentationConfig {
         return new OpenAPI()
             .info(new Info()
                 .title("Digital Signatures API")
-                .description("This API provides the functionality for signing")
+                .description("This API provides the functionality for signing PDF documents and creating PKCS#12 signing certificates")
                 .termsOfService("")
                 .version("1.0.0")
                 .license(new License()
                     .name("Apache 2.0")
                     .url("http://www.apache.org/licenses/LICENSE-2.0.html"))
                 .contact(new io.swagger.v3.oas.models.info.Contact()
-                    .email("you@your-company.com")));
+                    .email("")));
     }
 
 }

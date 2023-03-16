@@ -16,10 +16,6 @@ import java.util.Date;
 
 public class GeneratePKCS {
 
-    private static final String ALIAS = "myalias";
-    private static final String PASSWORD = "mypassword";
-    private static final String FILENAME = "mycertificate.p12";
-
     public byte[] createPKCS(String alias, String name, String password) throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
@@ -35,7 +31,6 @@ public class GeneratePKCS {
         keyStore.store(fileOutputStream, password.toCharArray());
         fileOutputStream.close();
         return fileOutputStream.toByteArray();
-//        System.out.println("PKCS12 file generated successfully.");
     }
 
     private static X509Certificate generateCertificate(KeyPair keyPair, String name) throws Exception {
