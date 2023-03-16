@@ -1,6 +1,5 @@
 package io.swagger.aws;
 
-import io.swagger.configuration.CustomDefaults;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;

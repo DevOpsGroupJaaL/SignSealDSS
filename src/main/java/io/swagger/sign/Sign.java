@@ -23,32 +23,34 @@ package io.swagger.sign;
  import eu.europa.esig.dss.token.Pkcs12SignatureToken;
 
  import io.swagger.aws.S3;
+ import io.swagger.certificates.CloudCertificates;
  import software.amazon.awssdk.services.s3.S3Client;
-
- import static eu.europa.esig.dss.utils.Utils.toByteArray;
 
 
 public class Sign {
-    private final String bucketName = "jaal-dsdss-documents";
+    private final String BUCKET_NAME = "jaal-dsdss-documents";
 
     private byte[] convertDocToByteArr(String filePath) throws IOException {
       return Files.readAllBytes(Paths.get(filePath));
     }
 
-    private SignatureImageParameters setImageParams() throws IOException {
+    private SignatureImageParameters setImageParams(String fullName, S3Client s3Client, S3 s3, CloudCertificates cc) throws IOException {
      // Initialize visual signature and configure
      SignatureImageParameters imageParameters = new SignatureImageParameters();
+
+     byte[] signImage = cc.getSigningImage(s3Client, s3);
      // set an image
-     imageParameters.setImage(new InMemoryDocument(convertDocToByteArr("/home/aledmin/Dev/JaalSigning/target/seal.jpeg")));
+     imageParameters.setImage(new InMemoryDocument(signImage));
 
      SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
 
      // Allows you to set a DSSFont object that defines the text style (see more information in the section "Fonts usage")
      DSSFont font = new DSSJavaFont(Font.SERIF);
+     font.setSize(5);
      textParameters.setFont(font);
 
      // Defines the text content
-     textParameters.setText("I have written this signature!!");
+     textParameters.setText(fullName);
 
      // Defines the color of the characters
      textParameters.setTextColor(Color.BLACK);
@@ -60,24 +62,27 @@ public class Sign {
      imageParameters.setFieldParameters(fieldParameters);
      // the origin is the left and top corner of the page
 
-     fieldParameters.setOriginY(30);
-     fieldParameters.setOriginX(480);
-     fieldParameters.setWidth(90);
-     fieldParameters.setHeight(90);
+     fieldParameters.setOriginY(10);
+     fieldParameters.setOriginX(530);
+     fieldParameters.setWidth(50);
+     fieldParameters.setHeight(60);
 
      return imageParameters;
     }
-    public String signDoc(String filePath, String certPath, String pass) throws IOException {
+    public String signDoc(String filePath, String certificateUser, String pass, String fullName) throws Exception {
     // connect to s3
      S3 s3 = new S3();
+     CloudCertificates cc = new CloudCertificates();
      S3Client s3Client = s3.getS3Client();
 
-     byte[] document = s3.getObjectBytes(s3Client, bucketName, filePath);
+     byte[] document = s3.getObjectBytes(s3Client, BUCKET_NAME, filePath);
+     byte[] certificate = cc.getCertificate(certificateUser);
+//     byte[] document =  convertDocToByteArr(filePath);
      // Convert Document from dir the byte array
      DSSDocument toSignDocument = new InMemoryDocument(document);
 
      // Get token from certificate
-     Pkcs12SignatureToken signingToken = new Pkcs12SignatureToken(certPath, new PasswordProtection(pass.toCharArray()));
+     Pkcs12SignatureToken signingToken = new Pkcs12SignatureToken(certificate, new PasswordProtection(pass.toCharArray()));
      DSSPrivateKeyEntry privateKey = signingToken.getKeys().get(0);
 
      // Preparing parameters for the PAdES signature
@@ -93,7 +98,7 @@ public class Sign {
      parameters.setCertificateChain(privateKey.getCertificateChain());
 
      // Set all the image and text params for the signature
-     parameters.setImageParameters(setImageParams());
+     parameters.setImageParameters(setImageParams(fullName, s3Client, s3, cc));
 
      // Create common certificate verifier
      CommonCertificateVerifier commonCertificateVerifier = new CommonCertificateVerifier();
@@ -114,9 +119,9 @@ public class Sign {
      // the previous step.
      DSSDocument signedDocument = service.signDocument(toSignDocument, parameters, signatureValue);
 
-    //     signedDocument.save("temp.pdf");
+//     signedDocument.save("temp.pdf");
      byte[] output = Utils.toByteArray(signedDocument.openStream());
-     S3.putS3Object(s3Client, bucketName, filePath, output);
+     S3.putS3Object(s3Client, BUCKET_NAME, filePath, output);
      return "OK";
 
     }
