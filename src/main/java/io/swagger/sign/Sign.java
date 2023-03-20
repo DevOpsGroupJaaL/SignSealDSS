@@ -18,6 +18,7 @@ package io.swagger.sign;
  import java.io.IOException;
  import java.nio.file.Paths;
  import java.security.KeyStore.PasswordProtection;
+ import java.util.Arrays;
 
  import eu.europa.esig.dss.token.DSSPrivateKeyEntry;
  import eu.europa.esig.dss.token.Pkcs12SignatureToken;
@@ -76,7 +77,12 @@ public class Sign {
      S3Client s3Client = s3.getS3Client();
 
      byte[] document = s3.getObjectBytes(s3Client, BUCKET_NAME, filePath);
+
+     System.out.println("==================== DOCUMENT");
+     System.out.println(document);
      byte[] certificate = cc.getCertificate(certificateUser);
+     System.out.println("==================== CERTIFICATE");
+     System.out.println(Arrays.toString(certificate));
 //     byte[] document =  convertDocToByteArr(filePath);
      // Convert Document from dir the byte array
      DSSDocument toSignDocument = new InMemoryDocument(document);
